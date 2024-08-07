@@ -27,6 +27,9 @@ func init() {
 func peersHandler(w http.ResponseWriter, r *http.Request) {
 	var requestPeer Peer
 	if r.Method == http.MethodPost {
+        remoteAddr := r.RemoteAddr
+        logger.Info("Request received from:", remoteAddr)
+
         err := json.NewDecoder(r.Body).Decode(&requestPeer)
         if err != nil {
 			logger.Error("Invalid request payload:", err)
@@ -40,9 +43,6 @@ func peersHandler(w http.ResponseWriter, r *http.Request) {
             http.Error(w, "Error saving peer", http.StatusInternalServerError)
             return
         }
-
-        w.WriteHeader(http.StatusCreated)
-        return
     }
 	
 	peers, err := findGoodPeers(requestPeer)
@@ -51,6 +51,11 @@ func peersHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error finding peers", http.StatusInternalServerError)
 		return
 	}
+    if len(peers) == 0 {
+        logger.Info("No good peers found")
+        http.Error(w, "No good peers found", http.StatusNotFound)
+        return
+    }
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(peers)

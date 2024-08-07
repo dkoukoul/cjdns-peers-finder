@@ -7,6 +7,7 @@ import (
 const routeServerUrl = "https://routeserver.cjd.li/api/"
 const nodesInfoEndpoint = "ni"
 const peersFilePath = "peers.json"
+const MAX_RETURNING_PEERS = 3
 
 var logger = logrus.New()
 
@@ -16,6 +17,7 @@ type Peer struct {
 	Login     string `json:"login"`
 	Password  string `json:"password"`
 	IP        string `json:"ip"`
+    IP6       string `json:"ip6"`
 	Port      int    `json:"port"`
 	PublicKey string `json:"publicKey"`
 }
