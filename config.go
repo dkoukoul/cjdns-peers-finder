@@ -8,7 +8,9 @@ const routeServerUrl = "https://routeserver.cjd.li/api/"
 const nodesInfoEndpoint = "ni"
 const peersFilePath = "peers.json"
 const MAX_RETURNING_PEERS = 3
-
+const serverPort = 8090
+//const cjdnsToolsPath = "/server/cjdns/tools/"
+const cjdnsToolsPath = "/home/dimitris/Code/cjdns/tools/"
 var logger = logrus.New()
 
 //RESPONSE Peer represents a CJDNS peer 
@@ -20,6 +22,7 @@ type Peer struct {
     IP6       string `json:"ip6"`
 	Port      int    `json:"port"`
 	PublicKey string `json:"publicKey"`
+    Status    string `json:"status,omitempty"`
 }
 
 //RouteServer /ni RESPONSE 

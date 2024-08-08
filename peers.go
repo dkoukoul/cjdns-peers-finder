@@ -68,7 +68,6 @@ func fetchNodeInfo(url string) (*NodeInfo, error) {
 func readPeersFromFile() ([]Peer, error) {
     var peers []Peer
     file, err := os.Open(peersFilePath)
-	logger.Info("Reading peers from file:", peersFilePath)
     if err != nil {
         if os.IsNotExist(err) {
 			logger.Info("Peers file does not exist")
@@ -90,31 +89,35 @@ func readPeersFromFile() ([]Peer, error) {
 func savePeerToFile(newPeer Peer) error {
     peers, err := readPeersFromFile()
     if err != nil {
-		logger.Error("Error reading peers from file:", err)
+        logger.Error("Error reading peers from file:", err)
         return err
     }
 
-    // Check for duplicates
-    for _, peer := range peers {
+    // Check for duplicates and update if exists
+    peerExists := false
+    for i, peer := range peers {
         if peer.IP == newPeer.IP {
-			logger.Info("Peer already exists")
-            return nil 
+            peers[i] = newPeer
+            peerExists = true
+            break
         }
     }
 
-    // Add the new peer
-    peers = append(peers, newPeer)
+    // If the peer does not exist, add the new peer
+    if !peerExists {
+        peers = append(peers, newPeer)
+    }
 
     // Write the updated peers list back to the file
     file, err := os.Create(peersFilePath)
     if err != nil {
-		logger.Error("Error creating peers file:", err)
+        logger.Error("Error creating peers file:", err)
         return err
     }
     defer file.Close()
     err = json.NewEncoder(file).Encode(peers)
     if err != nil {
-		logger.Error("Error encoding peers to file:", err)
+        logger.Error("Error encoding peers to file:", err)
         return err
     }
     return nil
@@ -154,7 +157,7 @@ func findGoodPeers(forNode Peer) ([]Peer, error) {
 	for _,node := range nodeData.Nodes {
 		for _,savedPeer := range savedPeers {
 			// Check if the node is in our saved peers list, which means we have the information needed
-			if (node.IP6 == savedPeer.IP6) {
+			if (node.IP6 == savedPeer.IP6) && (savedPeer.Status == "ESTABLISHED") {
 				nodeInfoUrl := routeServerUrl + nodesInfoEndpoint + "/" + node.IP6
 				nodeInfo, err := fetchNodeInfo(nodeInfoUrl)
 				if err != nil {

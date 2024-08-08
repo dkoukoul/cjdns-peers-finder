@@ -5,6 +5,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -17,8 +19,8 @@ func init() {
 
     multiWriter := io.MultiWriter(os.Stdout, logFile)
     logger.SetOutput(multiWriter)
-    logger.SetFormatter(&logrus.TextFormatter{
-        FullTimestamp: true,
+    logger.SetFormatter(&logrus.JSONFormatter{
+        TimestampFormat: time.RFC3339,
     })
     logger.SetLevel(logrus.InfoLevel)
 }
@@ -62,7 +64,19 @@ func peersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	logger.Info("Starting server on port 8080")
+	logger.Info("Starting server on port ", serverPort)
 	http.HandleFunc("/api/peers", peersHandler)
-	logger.Fatal(http.ListenAndServe(":8080", nil))
+    ticker := time.NewTicker(1 * time.Hour)
+    defer ticker.Stop()
+
+    // Start a goroutine that calls peerTest every hour
+    go func() {
+        select {
+        case <-ticker.C:
+            logger.Info("Running peer test at ", time.Now())
+            peerTest()
+        }
+    }()
+
+	logger.Fatal(http.ListenAndServe(":"+strconv.Itoa(serverPort), nil))
 }
