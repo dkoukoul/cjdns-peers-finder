@@ -166,11 +166,10 @@ func findGoodPeers(forNode Peer) ([]Peer, error) {
 				}
 				// exclude requester and nodes with >=100 peers
 				if (savedPeer.IP6 != forNode.IP6) && (len(nodeInfo.InwardLinksByIp) < 100) {
-					logger.Info("Adding peer:", savedPeer.IP6)
 					peers = append(peers, savedPeer)
 				}
 				if len(peers) == MAX_RETURNING_PEERS {
-					logger.Info("Found",MAX_RETURNING_PEERS," good peers")
+					logger.Info("Found ",MAX_RETURNING_PEERS," good peers")
 					return peers, nil
 				}
 			} 
