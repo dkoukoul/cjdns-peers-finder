@@ -64,17 +64,31 @@ func peersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	logger.Info("Starting server on port ", serverPort)
+
+	if cjdnsToolsPath == "/tools/" {
+        // DEFAULT for pkt-server check if peerstats exists in /server/cjdns/tools location
+        if _, err := os.Stat("/server/cjdns/tools/peerStats"); os.IsNotExist(err) {
+            logger.Fatal("peerStats not found in /server/cjdns/tools, try setting CJDNS_PATH env var. Exiting...")
+            os.Exit(1)
+        } else {
+            logger.Info("cjdns tools found in /server/cjdns/tools")
+        }
+    }
+
+    logger.Info("Starting server on port ", serverPort)
 	http.HandleFunc("/api/peers", peersHandler)
     ticker := time.NewTicker(1 * time.Hour)
     defer ticker.Stop()
-
+    
+    logger.Info("cjdns tools path fount at ", cjdnsToolsPath)
     // Start a goroutine that calls peerTest every hour
     go func() {
-        select {
-        case <-ticker.C:
-            logger.Info("Running peer test at ", time.Now())
-            peerTest()
+        for {
+            select {
+            case <-ticker.C:
+                logger.Info("Running peer test at ", time.Now())
+                peerTest()
+            }
         }
     }()
 

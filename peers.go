@@ -97,6 +97,9 @@ func savePeerToFile(newPeer Peer) error {
     peerExists := false
     for i, peer := range peers {
         if peer.IP == newPeer.IP {
+			if newPeer.Status == "" {
+				newPeer.Status = peer.Status
+			}
             peers[i] = newPeer
             peerExists = true
             break

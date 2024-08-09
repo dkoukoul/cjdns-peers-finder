@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"github.com/sirupsen/logrus"
 )
 
@@ -9,8 +10,8 @@ const nodesInfoEndpoint = "ni"
 const peersFilePath = "peers.json"
 const MAX_RETURNING_PEERS = 3
 const serverPort = 8090
-//const cjdnsToolsPath = "/server/cjdns/tools/"
-const cjdnsToolsPath = "/home/dimitris/Code/cjdns/tools/"
+var cjdnsToolsPath = os.Getenv("CJDNS_PATH")+ "/tools/"
+
 var logger = logrus.New()
 
 //RESPONSE Peer represents a CJDNS peer 
