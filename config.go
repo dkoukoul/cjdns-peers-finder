@@ -33,10 +33,17 @@ type Node struct {
     Rst           bool   `json:"rst"`
 }
 
+type PeerInfoPeer struct {
+    Addr               string `json:"addr"`
+    MsgQueue           int    `json:"msgQueue"`
+    MsgsOnWire         int    `json:"msgsOnWire"`
+    OutstandingRequests int   `json:"outstandingRequests"`
+}
+
 type PeerInfo struct {
     AnnByHashLen  int   `json:"annByHashLen"`
     Announcements int   `json:"announcements"`
-    Peers         []int `json:"peers"`
+    Peers         []PeerInfoPeer `json:"peers"`
 }
 
 type NodeDataResponseData struct {

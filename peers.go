@@ -30,7 +30,7 @@ func fetchNodeData(url string) (*NodeDataResponseData, error) {
     var data NodeDataResponseData
     err = json.Unmarshal(body, &data)
     if err != nil {
-		logger.Error("Error parsing JSON response:", err)
+		logger.Error("Error parsing NodeDataResponseData JSON response:", err)
         return nil, err
     }
 
@@ -57,7 +57,7 @@ func fetchNodeInfo(url string) (*NodeInfo, error) {
 	var data NodeInfoResponseData
 	err = json.Unmarshal(body, &data)
 	if err != nil {
-		logger.Error("Error parsing JSON response:", err)
+		logger.Error("Error parsing NodeInfoResponseData JSON response:", err)
 		return nil, err
 	}
 
@@ -133,22 +133,42 @@ func shuffleNodes(nodes *[]Node) {
     })
 }
 
-// Function to find good peers for a given node
-func findGoodPeers(forNode Peer) ([]Peer, error) {
-	url := routeServerUrl + nodesInfoEndpoint
-	logger.Info("Fetching data from:", url)
-	nodeData, err := fetchNodeData(url)
-    if err != nil {
-		logger.Error("Error fetching data:", err)
-        return nil, err
-    }
-	var peers []Peer
+func getDefaultPeers() ([]Peer, error) {
 	savedPeers, err := readPeersFromFile()
 	if err != nil {
 		logger.Error("Error reading peers from file:", err)
 		return nil, err
 	}
+	var peers []Peer
+	for _,savedPeer := range savedPeers {
+		if (savedPeer.Status == "ESTABLISHED") {
+			peers = append(peers, savedPeer)
+			if len(peers) == MAX_RETURNING_PEERS {
+				return peers, nil
+			}
+		}
+	}
+	return peers, nil
+}
 
+// Function to find good peers for a given node
+func findGoodPeers(forNode Peer) ([]Peer, error) {
+	// Make sure we have 3 default peers to be returned in all error cases
+	defPeers, _ := getDefaultPeers()
+	savedPeers, err := readPeersFromFile()
+	if err != nil {
+		logger.Error("Error reading peers from file:", err)
+		return defPeers, err
+	}
+	var peers []Peer
+	url := routeServerUrl + nodesInfoEndpoint
+	logger.Info("Fetching data from:", url)
+	nodeData, err := fetchNodeData(url)
+    if err != nil {
+		logger.Error("Error fetching data:", err)
+        return defPeers, err
+    }
+	
 	// Check if there are enough nodes to find good peers
 	if len(savedPeers) <= MAX_RETURNING_PEERS {
 		logger.Info("Not enough saved peers to find good peers, return all saved ones.")
@@ -165,7 +185,7 @@ func findGoodPeers(forNode Peer) ([]Peer, error) {
 				nodeInfo, err := fetchNodeInfo(nodeInfoUrl)
 				if err != nil {
 					logger.Error("Error fetching data:", err)
-					return nil, err
+					return defPeers, err
 				}
 				// exclude requester and nodes with >=100 peers
 				if (savedPeer.IP6 != forNode.IP6) && (len(nodeInfo.InwardLinksByIp) < 100) {

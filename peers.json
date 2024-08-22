@@ -48,5 +48,35 @@
         "port": 47512,
         "publicKey": "tslcuc5xswwhy79gudyzlvymxhml0h3w0pwd0wzdqgc4l1t2wnm0.k",
         "status": "ESTABLISHED"
+    },
+    {
+        "name": "uk.pktnet.gr",
+        "login": "default-login",
+        "password": "dhbypxufbznhvb2zryq88r7uc5l36h1",
+        "ip": "141.136.36.248",
+        "ip6": "fcde:6c2d:1b48:2fab:73aa:c1ca:01af:51e3",
+        "port": 8734,
+        "publicKey": "b06zfsjkfsxftw51jt34d54hn33gdu5z0kn0hqr23t1k7r0r2su0.k",
+        "status": "ESTABLISHED"
+    },
+    {
+        "name": "sorry2.pkteer.com",
+        "login": "default-login",
+        "password": "07y2tf1chft7wm9tl00f89qc63vdhvs",
+        "ip": "51.79.51.242",
+        "ip6": "fc91:74a6:9061:9be4:752b:1aab:1796:805f",
+        "port": 52733,
+        "publicKey": "dwr8dc930kwsz46sty5x09m0sq2j1c43853bxgk2bq6br2nlswt0.k",
+        "status": "ESTABLISHED"
+    },
+    {
+        "name": "kraut2.pkteer.com",
+        "login": "default-login",
+        "password": "dtxwpbbfhs8l3u9cvrrbd0hw45vpxqs",
+        "ip": "135.125.234.102",
+        "ip6": "fcdd:9a69:0f39:18ea:0edc:2909:ddb9:db91",
+        "port": 44131,
+        "publicKey": "r8u4j6mzyx4xbd3rjc2gbc7qj8u6mbqzu9504jzs3vl580zsvy00.k",
+        "status": "ESTABLISHED"
     }
 ]
